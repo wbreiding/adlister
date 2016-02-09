@@ -1,0 +1,57 @@
+#navbar {
+  height:auto;
+  width:100px;
+  background-color:#aaa;
+  border-color:black;
+  border-style:solid;
+  border-width:thin;
+  float:left;
+  margin-right: 20px;
+}
+#navbar a {
+  color: black;
+  text-decoration: none;
+  background-color: inherit;
+}
+#navbar a:hover {
+  color: red;
+  background-color: inherit;
+}
+#adList {
+  margin-left: 100px;
+  overflow: auto;
+}
+#adList a {
+  color: blue;
+  text-decoration: none;
+}
+#adList a:hover {
+  color: purple;
+  text-decoration: underline;
+}
+
+#listing {
+  width:auto;
+  height: auto;
+  position: relative;;
+  float:left;
+  padding: 20px;
+  margin-left: 20px;
+}
+#list1 {
+
+}
+#list2 {
+}
+#list3 {
+}
+#location {
+  float:right;
+  border-color: black;
+  border-style: solid;
+  border-width: thin;
+  width:auto;
+  height: auto;
+  padding: 10px;
+  background-color: #ddd;
+}
