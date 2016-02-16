@@ -1,6 +1,8 @@
 <?php
 include "../views/partials/header.php";
 include "../views/partials/navbar.php";
+require_once "../models/Ad.php";
+require_once "../utils/Input.php";
 ?>
 
 <form method="post" action="">
