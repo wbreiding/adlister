@@ -1,12 +1,29 @@
 <?php
 include "../views/partials/header.php";
 include "../views/partials/navbar.php";
+require_once "../models/Ad.php";
+require_once "../utils/Input.php";
 ?>
+
+<?php
+$message = "";
+if (Input::get('submit') == "Submit") {
+  $ad = new Ad(NULL, Input::get('name'), Input::get('description'), Input::get('price'), Input::get('image_url'), Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+  $ad->insert();
+  $message = "You have successfully submitted your ad.";
+  $id = $ad->id;
+
+}
+
+?>
+
+<div id="message"><?=$message?></div>
 
 <form method="post" action="">
 
-<label for="title">Title</label> <input type="text" name="title" /> <label for="price">Price</label> $<input type="text" name="price" size="5" /><br />
+<label for="name">Item</label> <input type="text" name="name" /> <label for="price">Price</label> $<input type="text" name="price" size="5" /><br />
 <label for="location">Specific Location</label> <input type="text" name="location" />   <label for="zip">Postal code</label> <input type="text" name="zip" size="7" /><br />
+<label for="image_url">Image</label> <!--input type="file" name="pic" accept="image/*" / --><input type="text" name="image_url" /><br />
 <label for="description">Description</label><br />
 <textarea name="description" cols="40" rows="10"></textarea>
 

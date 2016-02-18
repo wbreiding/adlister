@@ -33,7 +33,7 @@ class Ad extends BaseModel {
         $this->model = $model;
         $this->size = $size;
         $this->condition = $condition;
-      } else {
+      } elseif ($name == NULL) {
         $newAd = static::getAdByid($id);
         if ($newAd == NULL) {
           return;
@@ -49,6 +49,18 @@ class Ad extends BaseModel {
         $this->model = $newAd->attributes['model'];
         $this->size = $newAd->attributes['size'];
         $this->condition = $newAd->attributes['itemCondition'];
+    } else {
+      $this->id = $id;
+      $this->name = $name;
+      $this->description = $description;
+      $this->price = $price;
+      $this->image_url = $image_url;
+      $this->location = $location;
+      $this->zip = $zip;
+      $this->make = $make;
+      $this->model = $model;
+      $this->size = $size;
+      $this->condition = $condition;
     }
   }
 
@@ -61,33 +73,25 @@ class Ad extends BaseModel {
     return static::all();
   }
 
-  function insert() {
-    self::dbConnect();
+  public function insert() {
+    $tbl = self::$table;
+    $user = 1;
+    $insert = "INSERT INTO {$tbl} (user_id, name, description, price, image_url, location, zip, make, model, size, itemCondition) VALUES (:user_id, :name, :description, :price, :image_url, :location, :zip, :make, :model, :size, :condition)";
+    $queryArray = array(':user_id'=>$user, ':name'=>$this->name, ':description'=>$this->description, ':price'=>(float)$this->price, ':image_url'=>$this->image_url, ':location'=>$this->location, ':zip'=>$this->zip, ':make'=>$this->make, ':model'=>$this->model, ':size'=>$this->size, ':condition'=>$this->condition);
 
-    $insert = "INSERT INTO :table (name,description,price,image_url,location,zip,make,model,size,itemCondition) VALUES (':name', ':description', ':price', ':image_url', ':location', ':zip', ':make', ':model', ':size',':condition')";
-    $stmt = $dbc->prepare($insert);
-    $rows = $stmt->execute(array(':table'=>$this->table, ':name'=>$this->adArray['name'], ':description'=>$this->adArray['description'], ':price'=>$this->adArray['price'], ':image_url'=>$this->adArray['image_url'], ':location'=>$this->adArray['location'], ':zip'=>$this->adArray['zip'], ':make'=>$this->adArray['make'], ':model'=>$this->adArray['model'], ':condition'=>$this->adArray['condition']));
-
-    if ($rows == 1) {
-      //insert was successful
-    } else {
-      //something went wrong
-    }
+    return static::save('insert', $insert, $queryArray);
 
   }
 
   function update() {
-    self::dbConnect();
+    $tbl = self::$table;
+    $user = 1;
 
-    $update = "UPDATE :table SET name = ':name', description = ':description', price = ':price', image_url = ':image_url', location = ':location', zip = ':zip', make = ':make', model = ':model', size=':size', itemCondition = ':condition' WHERE id = :id";
-    $stme = $dbc->prepare($update);
-    $rows = $stmt->execute(array(':table'=>$this->table, ':name'=>$this->adArray['name'], ':description'=>$this->adArray['description'], ':price'=>$this->adArray['price'], ':image_url'=>$this->adArray['image_url'], ':location'=>$this->adArray['location'], ':zip'=>$this->adArray['zip'], ':make'=>$this->adArray['make'], ':model'=>$this->adArray['model'], ':condition'=>$this->adArray['condition'], ':id'=>$this->adArray['id']));
+    $update = "UPDATE {$tbl} SET name = :name, description = :description, price = :price, image_url = :image_url, location = :location, zip = :zip, make = :make, model = :model, size=:size, itemCondition = :condition WHERE id = :id";
+    $updateArray = array(':name'=>$this->name, ':description'=>$this->description, ':price'=>(float)$this->price, ':image_url'=>$this->image_url, ':location'=>$this->location, ':zip'=>$this->zip, ':make'=>$this->make, ':model'=>$this->model, ':size'=>$this->size, ':condition'=>$this->condition, ':id'=>$this->id);
 
-    if ($rows == 1) {
-      //insert was successful
-    } else {
-      //something went wrong
-    }
+    return static::save('update', $update, $updateArray);
+
 
   }
 

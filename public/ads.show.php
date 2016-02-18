@@ -15,7 +15,7 @@ $ad = new Ad($id);
   <div id="location">location: <?=$ad->location?></div>
 
   <p>
-    <img src="<?=$ad->image_url?>" /><br />
+    <img src="<?=$ad->image_url?>" width="400"/><br />
 <?=$ad->description?></p>
 
 <p>

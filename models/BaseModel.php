@@ -53,35 +53,27 @@ abstract class BaseModel {
     /*
      * Persist the object to the database
      */
-    public function save()
-    {
-        // @TODO: Ensure there are attributes before attempting to save
-        if (!empty($this->attributes)) {
+    public function save($type, $query, $array) {
 
-        // @TODO: Perform the proper action - if the `id` is set, this is an update, if not it is a insert
-          $action = ($this->attributes['id'] ? "update" : "insert");
+        $dbc = self::dbConnect();
 
-        // @TODO: Ensure that update is properly handled with the id key
-        if($action == "update") {
-          $id = $this->attributes['id'];
-        }
-        // @TODO: After insert, add the id back to the attributes array so the object can properly reflect the id
-        if ($action == "insert") {
 
-        }
-        // @TODO: You will need to iterate through all the attributes to build the prepared query
-        foreach ($attributes as $key=>$value) {
-          if ($key != 'id') {
+        $stmt = $dbc->prepare($query);
+        $rows = $stmt->execute($array);
 
-          }
+        if ($type == 'insert' && $rows == 1) {
+          //was successful
+          $this->id = $dbc->lastInsertId();
+          return $this->id;
+        } elseif ($type == 'update' && $rows == 1) {
+
+        } else {
+          //something went wrong
         }
 
-        // @TODO: Use prepared statements to ensure data security
-        $query = "update $this->table SET $key = $value WHERE id = $this->attributes['id']";
-        $result = $dbc->prepare($query);
-        $result->execute();
-      }
+
     }
+
     /*
      * Find a record based on any column
      */

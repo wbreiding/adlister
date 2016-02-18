@@ -55,3 +55,7 @@
   padding: 10px;
   background-color: #ddd;
 }
+#message {
+  color: red;
+  padding-bottom: 10px;
+}
