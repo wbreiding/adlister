@@ -1,7 +1,23 @@
 <?php
 include "../views/partials/header.php";
 include "../views/partials/navbar.php";
+
+require_once "../models/User.php";
+require_once "../utils/Input.php";
 ?>
+
+<?php
+$message = "";
+
+if (Input::get('submit') == "Submit") {
+  $user = new User(NULL, Input::get('username'), Input::get('password'), Input::get('firstname'), Input::get('lastname'), Input::get('email'));
+  $user->insert();
+  $message = "You have successfully added a user.";
+  $id = $user->id;
+
+}
+ ?>
+<div id="message"><?=$message?></div>
 
 <form method="post" action="">
 

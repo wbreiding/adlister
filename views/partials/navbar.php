@@ -1,7 +1,7 @@
 <div id="navbar">
 <a href="auth.login.php">Login</a> <br />
 <a href="users.create.php">Add User</a><br />
-<a href="usres.edit.php">Edit User</a><br />
+<a href="users.edit.php">Edit User</a><br />
 <a href="users.show.php">User Info</a><br />
 <a href="ads.index.php">List Ads</a><br />
 <a href="ads.edit.php">Edit Ads</a><br />
