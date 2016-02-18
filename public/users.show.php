@@ -4,11 +4,17 @@ include "../views/partials/navbar.php";
 
 require_once "../models/User.php";
 require_once "../utils/Input.php";
+require_once "../utils/Auth.php";
 ?>
 
 <?php
 
-$user_id = 1;
+session_start();
+if (Auth::check()) {
+  $user_id = Auth::userId();
+} else {
+  header("Location: auth.login.php");
+}
 $user = new User($user_id);
 
  ?>

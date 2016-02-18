@@ -3,10 +3,21 @@ include "../views/partials/header.php";
 include "../views/partials/navbar.php";
 require_once "../models/Ad.php";
 require_once "../utils/Input.php";
+require_once "../utils/Auth.php";
+
+$message = "";
+
 ?>
 
 <?php
-$message = "";
+
+session_start();
+if (Auth::check()) {
+  $user_id = Auth::userId();
+} else {
+  header("Location: auth.login.php");
+}
+
 if (Input::get('submit') == "Submit") {
   if (basename($_FILES["imageToUpload"]["name"]) != NULL) {
     //upload Image first
@@ -52,7 +63,7 @@ if (Input::get('submit') == "Submit") {
         if (move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $target_file)) {
             $message =  "The file ". basename( $_FILES["imageToUpload"]["name"]). " has been uploaded.";
             //create ad and insert into database
-            $ad = new Ad(NULL, Input::get('name'), Input::get('description'), Input::get('price'), $target_file, Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+            $ad = new Ad(NULL, $user_id, Input::get('name'), Input::get('description'), Input::get('price'), $target_file, Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
             $ad->insert();
             $message = "You have successfully submitted your ad, with new image.";
             $id = $ad->id;
@@ -61,7 +72,7 @@ if (Input::get('submit') == "Submit") {
         }
     }
   } else {
-    $ad = new Ad(Input::get('id'), Input::get('name'), Input::get('description'), Input::get('price'), Input::get('image_url'), Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+    $ad = new Ad(Input::get('id'), $user_id, Input::get('name'), Input::get('description'), Input::get('price'), Input::get('image_url'), Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
     $ad->update();
     $message = "You have successfully updated your ad.";
     $id = $ad->id;
@@ -74,7 +85,6 @@ if (Input::get('submit') == "Submit") {
 if ($id != NULL) {
     $ad = new Ad($id);
 ?>
-<div id="message"><?=$message?></div>
 
 <form method="post" action="ads.edit.php" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<?=$ad->id?>" />
@@ -100,14 +110,26 @@ if ($id != NULL) {
 </form>
 <?php
 } else {
-  $adList = Ad::getAllAds();
-  $adsArray = $adList->attributes;
+
+  $adList = Ad::getAdsByUser($user_id);
+  if ($adList == NULL) {
+    $message = "You do not have any ads to edit.";
+  ?>
+  <div id="message"><?=$message?></div>
+<?php 
+  } else {
+    $adsArray = $adList->attributes;
 ?>
+
+
+
   <ul>
     <?php foreach ($adsArray as $ad):?>
       <li id="EditListing"><a href="ads.edit.php?id=<?=$ad['id']?>"><?=$ad['name']?> - $<?=$ad['price']?></a></li>
     <?php endforeach?>
   </ul>
+<?php }
+?>
 <?php } ?>
 
 

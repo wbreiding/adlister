@@ -1,14 +1,11 @@
 <?php
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'ad_list');
-define('DB_USER', 'ads_user');
-define('DB_PASS', 'adsUser');
 require_once "BaseModel.php";
 class Ad extends BaseModel {
 
   protected static $table = 'ad';
 
   public $id;
+  public $user_id;
   public $name;
   public $description;
   public $price;
@@ -21,8 +18,9 @@ class Ad extends BaseModel {
   public $condition;
 
 
-  function __construct($id=NULL, $name=NULL, $description=NULL, $price=NULL, $image_url=NULL, $location=NULL, $zip=NULL, $make=NULL, $model=NULL, $size=NULL, $condition=NULL) {
+  function __construct($id=NULL, $user_id=NULL, $name=NULL, $description=NULL, $price=NULL, $image_url=NULL, $location=NULL, $zip=NULL, $make=NULL, $model=NULL, $size=NULL, $condition=NULL) {
       if ($id == NULL) {
+        $this->user_id = $user_id;
         $this->name = $name;
         $this->description = $description;
         $this->price = $price;
@@ -38,7 +36,9 @@ class Ad extends BaseModel {
         if ($newAd == NULL) {
           return;
         }
+
         $this->id = $newAd->attributes['id'];
+        $this->user_id = $newAd->attributes['user_id'];
         $this->name = $newAd->attributes['name'];
         $this->description = $newAd->attributes['description'];
         $this->price = $newAd->attributes['price'];
@@ -51,6 +51,7 @@ class Ad extends BaseModel {
         $this->condition = $newAd->attributes['itemCondition'];
     } else {
       $this->id = $id;
+      $this->user_id = $user_id;
       $this->name = $name;
       $this->description = $description;
       $this->price = $price;
@@ -73,11 +74,14 @@ class Ad extends BaseModel {
     return static::all();
   }
 
+  public static function getAdsByUser($user_id) {
+    return static::findMultiple('user_id',$user_id);
+  }
+
   public function insert() {
     $tbl = self::$table;
-    $user = 1;
     $insert = "INSERT INTO {$tbl} (user_id, name, description, price, image_url, location, zip, make, model, size, itemCondition) VALUES (:user_id, :name, :description, :price, :image_url, :location, :zip, :make, :model, :size, :condition)";
-    $queryArray = array(':user_id'=>$user, ':name'=>$this->name, ':description'=>$this->description, ':price'=>(float)$this->price, ':image_url'=>$this->image_url, ':location'=>$this->location, ':zip'=>$this->zip, ':make'=>$this->make, ':model'=>$this->model, ':size'=>$this->size, ':condition'=>$this->condition);
+    $queryArray = array(':user_id'=>$this->user_id, ':name'=>$this->name, ':description'=>$this->description, ':price'=>(float)$this->price, ':image_url'=>$this->image_url, ':location'=>$this->location, ':zip'=>$this->zip, ':make'=>$this->make, ':model'=>$this->model, ':size'=>$this->size, ':condition'=>$this->condition);
 
     return static::save('insert', $insert, $queryArray);
 

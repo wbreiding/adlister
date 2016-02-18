@@ -3,9 +3,18 @@ include "../views/partials/header.php";
 include "../views/partials/navbar.php";
 require_once "../models/Ad.php";
 require_once "../utils/Input.php";
+require_once "../utils/Auth.php";
 ?>
 
 <?php
+
+session_start();
+if (Auth::check()) {
+  $user_id = Auth::userId();
+} else {
+  header("Location: auth.login.php");
+}
+
 $message = "";
 if (Input::get('submit') == "Submit") {
 
@@ -52,7 +61,7 @@ if (Input::get('submit') == "Submit") {
       if (move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $target_file)) {
           $message =  "The file ". basename( $_FILES["imageToUpload"]["name"]). " has been uploaded.";
           //create ad and insert into database
-          $ad = new Ad(NULL, Input::get('name'), Input::get('description'), Input::get('price'), $target_file, Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+          $ad = new Ad(NULL, $user_id, Input::get('name'), Input::get('description'), Input::get('price'), $target_file, Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
           $ad->insert();
           $message = "You have successfully submitted your ad.";
           $id = $ad->id;

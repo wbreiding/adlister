@@ -1,4 +1,9 @@
 <?php
+define('DB_HOST', '127.0.0.1');
+define('DB_NAME', 'ad_list');
+define('DB_USER', 'ads_user');
+define('DB_PASS', 'adsUser');
+
 abstract class BaseModel {
 
     protected static $dbc;
@@ -101,6 +106,29 @@ abstract class BaseModel {
 
     }
 
+    public static function findMultiple($column,$value) {
+        // Get connection to the database
+        $dbc = self::dbConnect();
+
+        // @TODO: Create select statement using prepared statements
+        $tbl = static::$table;
+        $query = "SELECT * FROM {$tbl} WHERE {$column} = :id";
+        $result = $dbc->prepare($query);
+        $result->bindValue(':id', $value, PDO::PARAM_INT);
+
+        // @TODO: Store the resultset in a variable named $result
+        $result->execute();
+        // The following code will set the attributes on the calling object based on the result variable's contents
+        $results = $result->fetchAll(PDO::FETCH_ASSOC);
+        $instance = null;
+        if ($results) {
+            $instance = new static();
+            $instance->attributes = $results;
+            return $instance;
+        }
+        return null;
+
+    }
     /*
      * Find all records in a table
      */

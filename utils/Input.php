@@ -12,7 +12,7 @@ class Input
     public static function has($key)
     {
         // TODO: Fill in this function
-        $answer = (isset($_REQUEST[$key]) ? 'true' : 'false');
+        $answer = (isset($_REQUEST[$key]) ? (bool)'true' : (bool)'');
         return $answer;
     }
 
@@ -23,6 +23,10 @@ class Input
      * @param mixed $default default value to return if key not found
      * @return mixed value passed in request
      */
+    protected static function escape($input) {
+       return htmlspecialchars(strip_tags($input));
+    }
+
     public static function get($key, $default = null)
     {
         // TODO: Fill in this function
@@ -30,7 +34,7 @@ class Input
         return $answer;
     }
 
-    public static function getString($key, $min = 0, $max = 0) {
+    public static function getString($key, $min = 0, $max = 100) {
       if (!is_string($key) || !is_numeric($min) || !is_numeric($max)) {
         throw new InvalidArgumentException("{$key} is not a string or {$min} or {$max} are not numbers");
       }
@@ -44,11 +48,11 @@ class Input
       if (strlen($string) < $min || strlen($string) > $max) {
         throw new LengthException("{$string} is not the right length.");
       }
-      return $string;
+      return self::escape($string);
 
     }
 
-    public static function getNumber($key, $min = 0, $max = 0) {
+    public static function getNumber($key, $min = 0, $max = 10000) {
       if (!is_string($key) || !is_numeric($min) || !is_numeric($max)) {
         throw new InvalidArgumentException("{$key} is not a string or {$min} or {$max} are not numbers");
       }

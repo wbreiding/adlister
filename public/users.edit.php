@@ -4,9 +4,17 @@ include "../views/partials/navbar.php";
 
 require_once "../models/User.php";
 require_once "../utils/Input.php";
+require_once "../utils/Auth.php";
 ?>
 
 <?php
+session_start();
+if (Auth::check()) {
+  $user = Auth::userId();
+} else {
+  header("Location: auth.login.php");
+}
+
 $message = "";
 if (Input::get('submit') == "Submit") {
   $user = new User(Input::get('id'), Input::get('username'), Input::get('password'), Input::get('firstname'), Input::get('lastname'), Input::get('email'));
