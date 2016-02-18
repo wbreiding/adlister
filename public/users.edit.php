@@ -16,9 +16,10 @@ if (Input::get('submit') == "Submit") {
 
 } else {
   $id = Input::get('id');
-  $id = 1;
 }
-$user = new User($id);
+
+if ($id != NULL) {
+   $user = new User($id);
  ?>
 
 <div id="message"><?=$message?></div>
@@ -35,6 +36,17 @@ $user = new User($id);
 <br />
 <input type="submit" name="submit" value="Submit" />
 </form>
+<?php
+} else {
+  $userList = User::getAllUsers();
+  $userArray = $userList->attributes;
+?>
+  <ul>
+    <?php foreach ($userArray as $user):?>
+      <li id="EditListing"><a href="users.edit.php?id=<?=$user['id']?>"><?=$user['firstName']?> <?=$user['lastName']?></a></li>
+    <?php endforeach?>
+  </ul>
+<?php } ?>
 
 <?php
 include "../views/partials/footer.php";

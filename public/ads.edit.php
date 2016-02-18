@@ -8,10 +8,65 @@ require_once "../utils/Input.php";
 <?php
 $message = "";
 if (Input::get('submit') == "Submit") {
-  $ad = new Ad(Input::get('id'), Input::get('name'), Input::get('description'), Input::get('price'), Input::get('image_url'), Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
-  $ad->update();
-  $message = "You have successfully updated your ad.";
-  $id = $ad->id;
+  if (basename($_FILES["imageToUpload"]["name"]) != NULL) {
+    //upload Image first
+    $target_dir = "img/uploads/";
+    $target_file = $target_dir . basename($_FILES["imageToUpload"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+    // Check if image file is a actual image or fake image
+    if(isset($_POST["submit"])) {
+        $check = getimagesize($_FILES["imageToUpload"]["tmp_name"]);
+        if($check !== false) {
+            $uploadOk = 1;
+        } else {
+            $message =  "File is not an image.";
+            $uploadOk = 0;
+        }
+    }
+
+    // Check if file already exists
+    if (file_exists($target_file)) {
+        $message =  "Sorry, file already exists.";
+        $uploadOk = 0;
+    }
+
+    // Check file size
+    if ($_FILES["imageToUpload"]["size"] > 500000) {
+       $message =  "Sorry, your file is too large.";
+       $uploadOk = 0;
+    }
+
+    // Allow certain file formats
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+    && $imageFileType != "gif" ) {
+        $message =  "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+        $uploadOk = 0;
+    }
+
+    // Check if $uploadOk is set to 0 by an error
+    if ($uploadOk == 0) {
+        $message = $message . "Sorry, your file was not uploaded.";
+    // if everything is ok, try to upload file
+    } else {
+        if (move_uploaded_file($_FILES["imageToUpload"]["tmp_name"], $target_file)) {
+            $message =  "The file ". basename( $_FILES["imageToUpload"]["name"]). " has been uploaded.";
+            //create ad and insert into database
+            $ad = new Ad(NULL, Input::get('name'), Input::get('description'), Input::get('price'), $target_file, Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+            $ad->insert();
+            $message = "You have successfully submitted your ad, with new image.";
+            $id = $ad->id;
+        } else {
+            $message =  "Sorry, there was an error uploading your file.";
+        }
+    }
+  } else {
+    $ad = new Ad(Input::get('id'), Input::get('name'), Input::get('description'), Input::get('price'), Input::get('image_url'), Input::get('location'), Input::get('zip'), Input::get('make'), Input::get('model'), Input::get('size'), Input::get('condition'));
+    $ad->update();
+    $message = "You have successfully updated your ad.";
+    $id = $ad->id;
+  }
+
 
 } else {
   $id = Input::get('id');
@@ -21,11 +76,11 @@ if ($id != NULL) {
 ?>
 <div id="message"><?=$message?></div>
 
-<form method="post" action="ads.edit.php">
+<form method="post" action="ads.edit.php" enctype="multipart/form-data">
 <input type="hidden" name="id" value="<?=$ad->id?>" />
 <label for="title">Name</label> <input type="text" name="name" value="<?=$ad->name?>"/> <label for="price">Price</label> $<input type="text" name="price" size="5" value="<?=$ad->price?> "/><br />
 <label for="location">Specific Location</label> <input type="text" name="location" value="<?=$ad->location?> "/>   <label for="zip">Postal code</label> <input type="text" name="zip" size="7" value="<?=$ad->zip?>"/><br />
-<label for="image_url">Image</label> <!--input type="file" name="pic" accept="image/*" / --><input type="text" name="image_url" value="<?=$ad->image_url?>" /><br />
+<label for="image_url">Image</label> <input type="text" name="image_url" value="<?=$ad->image_url?>" />  Upload new image <input type="file" name="imageToUpload" id="imageToUpload" accept="image/*" /><br />
 <label for="description">Description</label><br />
 <textarea name="description" cols="40" rows="10"><?=$ad->description?> </textarea>
 

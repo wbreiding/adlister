@@ -53,6 +53,10 @@ class User extends BaseModel {
     return self::find('id', $id);
   }
 
+  public static function getAllUsers() {
+    return static::all();
+  }
+
   function insert() {
 
     $tbl = self::$table;
