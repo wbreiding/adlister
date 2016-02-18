@@ -1,9 +1,5 @@
 <?php
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'ad_list');
-define('DB_USER', 'ads_user');
-define('DB_PASS', 'adsUser');
-
+$_ENV = include '../.env.php';
 abstract class BaseModel {
 
     protected static $dbc;
@@ -27,8 +23,8 @@ abstract class BaseModel {
         if (!self::$dbc)
         {
             // @TODO: Connect to database
-            $string = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME;
-            $dbc = new PDO("$string", DB_USER, DB_PASS);
+            $string = "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'];
+            $dbc = new PDO("$string", $_ENV['DB_USER'], $_ENV['DB_PASS']);
 
             // Tell PDO to throw exceptions on error
             $dbc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

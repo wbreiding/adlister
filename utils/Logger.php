@@ -9,7 +9,7 @@
       $dt = new DateTime();
       $date = $dt->format('Y-m-d');
 
-      $this->filename = "{$prefix}-{$date}.log";
+      $this->filename = "../public/log/{$prefix}-{$date}.log";
       $this->handle = fopen($this->filename, 'a');
 
     }
